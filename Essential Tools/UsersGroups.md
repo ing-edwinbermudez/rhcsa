@@ -149,7 +149,7 @@ Each rule defines what actions a user or group can perform with `sudo`.
 
 ---
 
-### 📂 Example Entries
+#### 📂 Example Entries
 The user `root` can run any command, on any host, as any user and group.
 ```bash
 root    ALL=(ALL:ALL) ALL
