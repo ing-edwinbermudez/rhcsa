@@ -208,3 +208,24 @@ man journalctl
 * Purpose: Searches the manual page descriptions for the keyword "director".
 * Displays a list of all commands and topics that mention "director" in their short man descriptions.
 * 🧠 Think of apropos as a man page search engine.
+
+## 📂 Exploring Documentation: `cd /usr/share/doc`
+
+```bash
+cd /usr/share/doc
+ls
+```
+
+* This command navigates to the system documentation directory.
+* Located at /usr/share/doc, it contains text files, changelogs, and READMEs for installed packages.
+
+Inside each folder, you may find:
+
+* README – Introduction or usage notes
+
+* changelog.gz – Changes made in each version
+
+* copyright – Licensing information
+
+* examples/ – Sample configuration files
+
