@@ -114,7 +114,7 @@ last
 `last` Displays the login history of users (from /var/log/wtmp).
 
 
-####  <span style="color:red">Switching User </span> 
+##  <span style="color:red">Switching User </span> 
 You can switch users or run commands as another user using the following commands:
 
 ```bash
@@ -168,3 +168,43 @@ The user `sarah` can only reboot the system using the specified command, and onl
 ```bash
 sarah   localhost=/usr/bin/shutdown -r now
 ```
+
+
+##  <span style="color:red">Use System Documentation</span>  
+Linux provides built-in tools to access help and manual pages for nearly all commands.
+
+#### 🔹 `--help` Option
+
+```bash
+ls --help
+journalctl --help
+```
+
+
+### 🔹 `man` 
+
+The `man` command provides detailed documentation for commands, system calls, configuration files, and more.
+
+```bash
+man ls
+man journalctl
+```
+
+`mandb`
+
+```bash
+ sudo mandb
+```
+
+* Purpose: Updates the manual page index database.
+* Useful after installing new software or adding custom man pages.
+* Requires sudo because it writes to system-wide directories (like /var/cache/man).
+
+`apropos`
+
+```bash
+ apropos director
+```
+* Purpose: Searches the manual page descriptions for the keyword "director".
+* Displays a list of all commands and topics that mention "director" in their short man descriptions.
+* 🧠 Think of apropos as a man page search engine.
