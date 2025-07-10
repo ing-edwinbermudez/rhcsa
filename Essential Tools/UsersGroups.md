@@ -138,7 +138,7 @@ cat /etc/sudoers
 The `/etc/sudoers` file controls **who can run commands as another user (typically root)**.  
 Each rule defines what actions a user or group can perform with `sudo`.
 
-### 📘 Field Breakdown
+#### 📘 Field Breakdown
 
 | Field            | Description                                       | Example                         |
 |------------------|---------------------------------------------------|---------------------------------|
