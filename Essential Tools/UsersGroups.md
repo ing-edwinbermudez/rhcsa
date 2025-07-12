@@ -202,6 +202,12 @@ man journalctl
 
 `apropos`
 
+**🧾 What is apropos?**
+
+The apropos command searches the man pages for keywords related to what you're looking for. It gives you a list of man page entries (from all sections) that match your search term.
+
+Think of it like a "man page search engine."
+
 ```bash
  apropos director
 ```
