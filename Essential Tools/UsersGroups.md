@@ -229,3 +229,39 @@ Inside each folder, you may find:
 
 * examples/ – Sample configuration files
 
+## What are "man pages"?
+
+Man pages (manual pages) are the official documentation for most commands, programs, system calls, and configuration files on Unix/Linux systems. You view them using the man command.
+
+#### **Manual Sections Overview**
+
+Man pages are organized into numbered sections, each covering a different type of content.
+
+
+| Section | Description                                               |
+| ------- | --------------------------------------------------------- |
+| 1       | User commands (executables used in the shell)             |
+| 2       | System calls (kernel functions)                           |
+| 3       | Library functions (C standard library, etc.)              |
+| 4       | Special files (usually device files in `/dev`)            |
+| 5       | File formats and configuration files                      |
+| 6       | Games and screensavers                                    |
+| 7       | Miscellaneous (conventions, standards, macro packages)    |
+| 8       | System administration commands (requires root access) |
+
+ Find all available sections for a command
+
+ ```bash
+ man -f command
+ ```
+
+ ```bash
+ man -f passwd
+ ```
+![alt text](images/image2.png)
+
+```bash
+man 5 passwd
+```
+![alt text](images/image3.png)
+
