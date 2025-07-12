@@ -105,3 +105,124 @@ It always begins with a / and does not depend on your current working directory.
 | -------- | -------------------------------- | ------------------------------------- |
 | Absolute | `/home/ehbc/scripts/generate.sh` | Always the same, starts from root `/` |
 | Relative | `scripts/generate.sh`            | Depends on where you run it from      |
+
+
+## Create, delete, copy, and move files and directories
+
+`make directory`
+
+Creates a new directory called folder in the current location.
+```bash
+mkdir folder
+```
+
+
+Creates all directories in the path if they don’t exist.
+
+```bash
+mkdir -p projects/app/logs
+```
+
+`Copy Files`
+
+```bash
+cp [source] [destination]
+```
+
+Copies index.html into the Nginx web root directory.
+
+```bash
+cp index.html /var/www/html/index.html
+```
+
+`Recursive`
+```bash
+cp -r  [source_folder] [destination_folder] 
+```
+
+Copies the entire website folder into /var/www/html.
+```bash
+cp -r website/ /var/www/html/
+
+```
+
+#### **Useful `cp` Options**
+
+| Option | Description                          |
+| ------ | ------------------------------------ |
+| `-r`   | Recursive (copy directories)         |
+| `-u`   | Copy only when the source is newer   |
+| `-v`   | Verbose (shows what is being copied) |
+| `-i`   | Interactive (asks before overwrite)  |
+| `-f`   | Force overwrite without prompt       |
+
+
+`Moving Files`
+
+Moves a file or directory from one location to another.
+If the destination is a file name, it will rename the file.
+If the destination is a directory, it will move the file into that directory.
+
+```bash
+mv [source] [destination]
+```
+
+Moves index.html to /var/www/html/.
+
+```bash
+mv index.html /var/www/html/
+```
+
+Renames the file from oldname.txt to newname.txt.
+```bash
+mv oldname.txt newname.txt
+```
+
+Moves the folder folder1 into the projects directory.
+```bash
+mv folder1/ /home/ehbc/projects/
+```
+
+#### **Useful `mv` Options**
+
+| Option | Description                             |
+| ------ | --------------------------------------- |
+| `-i`   | Interactive: prompts before overwriting |
+| `-f`   | Force: overwrites without prompting     |
+| `-v`   | Verbose: shows what is being moved      |
+
+Move report.txt to backup/, and ask before overwriting.
+
+```bash
+mv -iv report.txt backup/
+```
+
+` Removing Files and Directories`
+
+Deletes the file named example.txt.
+
+```bash
+rm example.txt
+```
+
+Remove a Directory (Recursively)
+```bash
+rm -r Invoices/
+
+```
+
+#### **Useful `rm` Options**
+
+| Option | Description                            |
+| ------ | -------------------------------------- |
+| `-r`   | Recursive (for directories)            |
+| `-f`   | Force delete (no confirmation prompts) |
+| `-i`   | Interactive (asks before deleting)     |
+| `-v`   | Verbose (shows what is being deleted)  |
+
+Recursively deletes Projects/, but prompts you before each deletion — safer.
+
+```bash
+rm -ri Projects/
+```
+**⚠️ Warning** This would attempt to delete your entire filesystem — very dangerous and typically blocked for security reasons.
