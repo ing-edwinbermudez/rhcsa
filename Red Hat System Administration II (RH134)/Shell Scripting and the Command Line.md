@@ -175,4 +175,204 @@ You can access all elements in an array by using an at sign (@) or an asterisk (
 echo "The human eye can see the following colors: ${colors[@]}"
 ```
 
+Note
+    The curly brace syntax also enables many advanced operations, such as pattern replacement, default values, and length evaluation. Refer to the bash(1) man page for more information.
 
+## Configure Bash with Shell Variables
+
+Some shell variables are set when Bash starts. You can modify them to adjust the shell's behavior. Remember, this modification affects only the shell that you run the command in, not any other shells that you might be running on that server.
+
+For example, the HISTFILE, HISTFILESIZE, and HISTTIMEFORMAT shell variables affect the shell history and the history command
+
+The HISTFILE variable specifies which file to save the shell history to, and defaults to the ~/.bash_history file.
+
+The HISTFILESIZE variable specifies how many commands to save in that file from the history.
+
+The HISTTIMEFORMAT variable defines the time stamp format for every command in the history. This variable does not exist by default.
+
+In the following example, the output of the history command does not show any timestamp:
+
+```bash
+history
+```
+Set the timestamp format to the %Y-%m-%d date format and the %H:%M:%S 24-hour notation:
+
+```bash
+HISTTIMEFORMAT="%F %T "
+```
+
+You can verify that the timestamp is now shown in the output of the `history` command:
+
+```bash
+history
+```
+
+Another example is the PS1 variable, which controls the appearance of the shell prompt. If you change this value, then it changes the appearance of your shell prompt.
+
+Red Hat recommends ending the prompt with a trailing space to help differentiate the prompt from commands. Various special character expansions that the prompt supports are listed in the "PROMPTING" section of the bash(1) man page.
+
+For example, you can set the bash command prompt to the bash$ prompt:
+
+```bash
+PS1="bash\$ "
+```
+
+You can also set the bash command prompt to appear in the following format:
+
+```bash
+PS1="[\u@\h \W]\$ "
+```
+
+The `\u` prompt string displays the username of the current user.
+
+The `\h` prompt string displays the hostname until the first period character (.).
+
+The `\W` prompt string displays the basename of the $PWD variable, and the $HOME variable is abbreviated with a tilde (~).
+
+The `\$` prompt string displays # if the effective UID is 0; otherwise, this prompt string displays $.
+
+## Configuring Programs with Environment Variables
+
+The shell provides an environment for the programs that you run from that shell. Among other items, this environment includes information about the current working directory on the file system, the command-line options that are passed to the program, and the values of environment variables. You can use environment variables to change the behavior of programs or their default settings.
+
+To list all the environment variables for a shell, use the `env` command:
+
+```bash
+env
+```
+
+If a shell variable is not an environment variable, then only the shell can use it. However, if a shell variable is an environment variable, then the shell and any programs that run from that shell can use that variable.
+
+Note
+    The HISTFILE, HISTFILESIZE, and PS1 variables from the previous section do not need to be exported as environment variables, because only the shell itself uses them, not the programs that you run from the shell.
+
+You can assign any variable that is defined in the shell as an environment variable by marking it for export with the export command.
+
+The following example sets Vim as the text editor.
+
+```bash
+EDITOR=vim
+```
+
+Export the `EDITOR` variable.
+
+```bash
+export EDITOR
+```
+
+You can set and export a variable in one step:
+
+```bash
+export EDITOR=vim
+```
+
+The shell automatically sets the `HOME` variable to the file name of the user's home directory when the shell starts. You can use this variable to help programs to determine where to save files.
+
+The `LANG` variable sets the locale encoding. This variable adjusts the preferred language for program output; the character set; the formatting of dates, numbers, and currency; and the sort order for programs. If the `LANG` variable is set to en_US.UTF-8, then the locale uses US English with UTF-8 Unicode character encoding. Or, if this variable is set to fr_FR.UTF-8, then the locale uses French UTF-8 Unicode encoding.
+
+In the following example, verify that the date command uses the en_US.UTF-8 format:
+
+```bash
+date
+```
+
+Export the `LANG` variable to the fr_FR.UTF-8 value:
+
+```bash
+export LANG=fr_FR.UTF-8
+```
+
+Verify that the date command now shows the new format that the  `LANG` variable sets:
+
+```bash
+date
+```
+
+The `PATH` environment variable contains a list of colon-separated directories that define where executable commands exist:
+
+```bash
+echo $PATH
+```
+
+When you run a command such as the ls command, the shell looks for the ls executable file in each of those directories in order, and runs the first matching file that it finds. (On a typical Red Hat system, this file is the `/usr/bin/ls` executable file.)
+
+You can append or prepend directories to your `PATH` variable. For example, you want to run some executable programs or scripts such as regular commands in the `/home/user/sbin` directory. You can append the `/home/user/sbin` directory to your PATH variable for the current session as follows:
+
+```bash
+export PATH=${PATH}:/home/user/sbin
+```
+
+## Set the Default Text Editor
+
+The `EDITOR` environment variable specifies your default text editor for command-line programs. Many programs use the vi or vim editor if not specified, and you can override this preference:
+
+```bash
+export EDITOR=nano
+```
+
+## Setting Variables Automatically
+
+When Bash starts, several text files run with shell commands that initialize the shell environment. To set shell or environment variables automatically when your shell starts, you can edit these Bash startup scripts.
+
+The exact scripts that run depend on whether the shell is interactive or noninteractive, and is a login or a non-login shell.
+
+A user directly enters commands into an interactive shell, whereas a noninteractive shell, such as a script, runs in the background without user intervention. For interactive login shells, the `/etc/profile` and `~/.bash_profile` files configure the Bash environment. The `/etc/profile` file also sources the `/etc/bashrc` file, and the `~/.bash_profile` file sources the `~/.bashrc` file. Noninteractive shells invoke any files that the `BASH_ENV` variable defines. This variable is not defined by default.
+
+A login shell is invoked when a user logs in locally via the terminal or remotely via the SSH protocol.
+
+A non-login shell is invoked from within an existing login session, such as when you open a terminal from the GNOME GUI. For interactive non-login shells, only the `/etc/bashrc` and `~/.bashrc` files configure the Bash environment. Whereas the `/etc/profile` and `/etc/bashrc` files apply to the whole system, the `~/.bash_profile` and `~/.bashrc` files are user-specific.
+
+For example, to change the default editor when you log in via SSH, you can modify the `EDITOR` variable in your `~/.bash_profile` file:
+
+```bash
+# .bash_profile
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+        . ~/.bashrc
+fi
+
+# User specific environment and startup programs
+export EDITOR=nano
+```
+
+**Important**
+    The best way to adjust settings that affect all user accounts is to create a file with a .sh extension with the changes, and add this file to the `/etc/profile.d` directory. To create the files in the `/etc/profile.d directory`, log in as the `root` user.
+
+## Bash Aliases
+
+Bash aliases are shortcuts to other Bash commands. For example, if you often type a long command, then you can create a shorter alias to invoke it. Use the `alias` command to create aliases. Consider the following example, which creates a hello alias for an echo command.
+
+```bash
+alias hello='echo "Hello, this is a long string."'
+```
+
+You can then run the `hello` command and it invokes the echo command.
+
+```bash
+hello
+```
+
+Add aliases to the user's `~/.bashrc` file so they are available in any interactive shell.
+
+## Unsetting and Unexporting Variables and Aliases
+
+To unset and unexport a variable, use the unset command:
+
+```bash
+echo $file1
+unset file1
+echo $file1
+```
+
+To unexport a variable without unsetting it, use the export -n command:
+
+```bash
+export -n PS1
+```
+
+To unset an alias, use the unalias command:
+
+```bash
+unalias hello
+```
