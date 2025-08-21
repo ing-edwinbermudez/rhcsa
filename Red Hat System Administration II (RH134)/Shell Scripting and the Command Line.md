@@ -1,4 +1,5 @@
 # Changing the Shell Environment
+---
 
 ## Shell Variables
 
@@ -375,4 +376,242 @@ To unset an alias, use the unalias command:
 
 ```bash
 unalias hello
+```
+---
+# Writing Simple Bash Scripts
+---
+
+## Create and Execute Bash Shell Scripts
+
+You can accomplish many system administration tasks by using command-line tools. More complex tasks often require chaining together multiple commands and passing the results between them. By using the Bash shell environment and scripting features, you can combine Linux commands into shell scripts to solve real-world problems.
+
+A Bash shell script is a sequence of commands along with programming logic to control decision-making in the overall task. You can write shell scripts in the form of script files to handle repetitive tasks. When well-written, a shell script is a powerful command-line tool on its own, and you can use it with other scripts.
+
+Shell scripting proficiency is essential for system administrators in any operational environment. You can use shell scripts to improve the efficiency and accuracy of routine task completion.
+
+Although you can use any text editor, advanced editors such as `vim` or `emacs` understand Bash shell syntax and can provide color-coded highlighting. This highlighting helps to identify common scripting errors such as improper syntax, unmatched quotes, parentheses, brackets, and braces, and other structural mistakes.
+
+## Specify the Command Interpreter
+
+The first line of a script file begins with the `#!` notation, which is commonly referred to as `shebang` or `hash-bang`, from the names of those two characters, `sharp` or `hash` and `bang`.
+
+This notation indicates which command interpreter to process the script under, when you execute the script directly.
+
+For Bash syntax script files, the first line is the following directive:
+
+```bash
+#!/bin/bash
+```
+
+This line indicates that the `/usr/bin/bash` executable file processes the remaining lines of the script. If the script is named `script.sh`, then the previous `#!` line directs your system to execute the equivalent of the following command:
+
+```bash
+/usr/bin/bash script.sh
+```
+
+## Execute a Bash Shell Script
+
+A shell script file must have execute permissions to run it as an ordinary command. Use the `chmod` command to modify the file permissions. Use the `chown` command, if needed, to grant execute permission only for specific users or groups.
+
+If the script is stored in a directory that is listed in the shell's `PATH` environment variable, then you can run the shell script by using only its file name, similar to running compiled commands. The parsing of the `PATH` variable runs the first matching file name that is found. The name of the shell scripts must not match the command names that are present on the system. If a file exists within a directory that your PATH variable specifies, then you can determine its location by using the  `which` command. Alternatively, run a script in your current working directory by using the . directory prefix, such as `./scriptname`.
+
+Use the `which` command to determine the location of the hello script:
+
+```bash
+which hello
+```
+
+Verify that the `~/bin` directory is present in the `PATH` variable:
+
+```bash
+echo $PATH
+```
+
+## Positional Parameters
+
+A positional parameter is a parameter that is indicated by one or more digits. You use positional parameters to pass text input to a shell script when it is invoked.
+
+Positional parameters, like shell variables, are expanded with a dollar sign ($) prefix. Use $0 to refer to the command to run the shell script itself. Use $1 to refer to the first parameter; use $2 to refer to the second parameter; and so on. When a positional parameter that consists of more than a single digit is expanded, it must be enclosed in braces, for example ${10}.
+
+Positional parameters are not variables themselves, and thus they are not directly assignable in the same manner as variables. Positional parameters can, however, be reassigned in a single step by using the set builtin command.
+
+The following Bash script named params.sh illustrates the use of positional parameters:
+
+```bash
+#!/usr/bin/bash
+
+echo "Parameter 0: $0"
+echo "Parameter 1: $1"
+echo "Parameter 2: $2"
+echo "Parameter 10 (incorrect): $10" 1
+echo "Parameter 10 (correct): ${10}"
+
+set -- "$1" "$2" "$4" "$3" 2
+
+echo
+echo "Parameter 3 (after set): $3"
+echo "Parameter 4 (after set): $4"
+echo "Parameter 10 (after set): ${10}"
+```
+
+	
+- The positional parameter `10` is expanded incorrectly due to the lack of braces.
+- The `set` builtin command is used to swap the values of the positional parameters 3 and 4. Note that positional parameters 5 through 10 are not referenced and are removed as a result.
+
+The following command prints the output for corresponding positional parameters:
+
+```bash
+./params.sh 1st 2nd 3rd 4th 5th 6th 7th 8th 9th 10th
+```
+
+```bash
+Parameter 0: ./params.sh 1 #(1)
+Parameter 1: 1st
+Parameter 2: 2nd
+Parameter 10 (incorrect): 1st0 2 #(2)
+Parameter 10 (correct): 10th 3 #(3)
+
+Parameter 3 (after set): 4th 4 #(4)
+Parameter 4 (after set): 3rd   
+Parameter 10 (after set): 5     #(5)
+```
+
+1) Positional parameter `0` represents the script exactly as it was called. If the script is called by using an absolute path, such as the `/home/user/params.sh` path, then the `/home/user/params.sh` path is printed instead.
+
+2) In this incorrect expansion of positional parameter `10`, braces are not used. Bash interprets this parameter as positional parameter `1`, followed by the number `0`.
+
+3) In this correct expansion of the positional parameter `10`, braces are used. Bash interprets this parameter correctly as positional parameter `10`.
+
+4) The values of positional parameters `3` and `4` are reversed due to the swap that the set builtin command made.
+
+5) The value of positional parameter `10` is empty because it was removed during the use of the set builtin command.
+
+Note
+
+    Positional parameters are not necessarily equivalent to arguments or options. Each positional parameter can be enclosed in quotes and is separated by whitespace; however, such parameters can be complicated to parse.
+
+    You can use the `getopts` builtin command, with a case statement, to parse options along with their related arguments, such as -o yaml.
+
+    For more information, refer to the builtins(1) man page.
+
+## Quote Special Characters
+
+Some characters and words have a special meaning to the Bash shell. To use these characters for their literal values rather than for their special meanings, you escape them in the script. Use the backslash character (\), single quotation marks (''), or double quotation marks ("") to remove (or escape) the special meaning of these characters.
+
+The backslash character removes the special meaning of the single character that immediately follows the backslash. For example, to use the echo command to display the # not a comment literal string, the # hash character must not be interpreted as a comment.
+
+```bash
+echo # not a comment
+```
+
+The following example shows the backslash character (\) modifying the hash character so it is not interpreted as a comment:
+
+```bash
+echo \# not a comment
+```
+
+To escape more than one character in a text string, either use the backslash character multiple times, or enclose the whole string in single quotation marks ('') to interpret literally.
+
+```bash
+echo # not a comment #
+```
+
+The backslash character preserves one character in the following example:
+
+```bash
+echo \# not a comment #
+```
+
+The backslash character preserves two characters in the following example:
+
+```bash
+echo \# not a comment \#
+```
+
+Single quotation marks preserve the literal meaning of all characters that they enclose, as in the following example:
+
+```bash
+ echo '# not a comment #'
+```
+
+Use the following example to parse the variables by using various characters:
+
+```bash
+var=$(hostname -s); echo $var
+```
+
+Use double quotation marks to suppress globbing (file name pattern matching) and shell expansion, but still allow command and variable substitution.
+
+```bash
+echo "***** hostname is ${var} *****"
+```
+
+Variable substitution is conceptually similar to command substitution, and might use optional brace syntax. The question mark (?) is included inside the quotations, because it is a metacharacter that also needs escaping from expansion.
+
+```bash
+echo "Will variable $var evaluate to $(hostname -s)?"
+```
+
+Use double quotation marks to make the backslash character inoperative:
+
+```bash
+echo "\"Hello, world\""
+```
+
+Use single quotation marks to interpret all enclosed text literally:
+
+```bash
+echo '"Hello, world"'
+```
+
+Besides suppressing globbing and shell expansion, single quotation marks also direct the shell to suppress command and variable substitution. The question mark (?) is included inside the quotations, because it is a metacharacter that also needs escaping from expansion.
+
+```bash
+echo 'Will variable $var evaluate to $(hostname -s)?'
+```
+
+## Provide Output from a Shell Script
+
+The `echo` command displays arbitrary text by passing the text as an argument to the command. By default, the text is sent to standard output (STDOUT). You can send text elsewhere by using output redirection.
+
+In the following simple Bash script, the echo command displays the "Hello, world" message:
+
+```bash
+cat ~/bin/hello
+```
+```bash
+#!/usr/bin/bash
+echo "Hello, world"
+```
+
+When you run the script, the output redirects to STDOUT, which defaults to the screen device:
+
+```bash
+hello
+```
+
+The `echo` command is widely used in shell scripts to display informational or error messages. Messages help indicate a script's progress, and can be directed to standard output or standard error, or be redirected to a log file for archiving. When you display error messages, good programming practice is to redirect error messages to STDERR to separate them from normal program output.
+```bash
+cat ~/bin/hello
+```
+```bash
+#!/usr/bin/bash
+
+echo "Hello, world"
+echo "ERROR: Houston, we have a problem." >&2
+```
+
+In the following example, the `hello` script error message is redirected to the `hello.log` file:
+
+```bash
+hello 2> hello.log
+```
+
+View the contents of the hello.log file.
+
+```bash
+cat hello.log
+```
+```bash
+ERROR: Houston, we have a problem.
 ```
