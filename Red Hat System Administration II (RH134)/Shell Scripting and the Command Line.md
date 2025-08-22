@@ -615,3 +615,323 @@ cat hello.log
 ```bash
 ERROR: Houston, we have a problem.
 ```
+---
+# Running Loops and Conditional Commands
+---
+
+## Use Loops to Iterate Commands
+
+System administrators often encounter repetitive tasks in their daily activities. A repetitive task example is running a command multiple times on a target, such as checking a process every minute for 10 minutes to know whether it completed. Another example is running a command once each for multiple targets, such as backing up many databases on a system. The for loop is a Bash looping construct to use for task iteration
+
+## Process Items from the Command Line
+
+In Bash, the for loop construct uses the following syntax:
+
+```bash
+for VARIABLE in LIST; do
+    COMMAND VARIABLE
+done
+```
+
+The loop processes the strings that you provide in LIST, and exits after processing the last string in the list. The `for` loop temporarily stores each list string as the value of VARIABLE, and then executes the block of commands that use the variable. The variable name is arbitrary. Typically, you reference the variable value with commands in the command block.
+
+Provide the list of strings for the for loop from a list that the user enters directly, or that is generated from shell expansion, such as variable, brace, or file name expansion, or command substitution.
+
+The following example uses the for loop to print the value of the HOST variable:
+
+```bash
+for HOST in host1 host2 host3;do echo $HOST; done
+```
+
+The following example uses the for loop to print the value of the HOST variable by using braces ({}):
+
+```bash
+for HOST in host{1,2,3};do echo $HOST;done
+```
+
+The following example uses the for loop to print the value of the HOST variable by using the range of values in braces:
+
+```bash
+for HOST in host{a..c};do echo $HOST; done
+```
+
+Another example uses the for loop to print the value of the HOST variable by using the range of values in braces:
+
+```bash
+for FILE in file{a..f}; do echo $FILE;done
+```
+
+Use the `for` loop to print the installed kernel packages along with the date in a string:
+
+```bash
+for PACKAGE in $(rpm -qa |grep kernel);do echo "$PACKAGE was installed on $(date -d @$(rpm -q --qf "%{INSTALLTIME}\n" $PACKAGE))";done
+```
+
+Use the for loop to print even numbers from 1 through 10:
+
+```bash
+for EVEN in $(seq 2 2 10); do echo "$EVEN"; done
+```
+
+## Conditional Commands
+
+Simple shell scripts represent a collection of commands that are executed from beginning to end. Programmers incorporate decision-making into shell scripts by using conditional commands. A script can execute specific routines when stated conditions are met.
+
+## Bash Script Exit Codes
+
+An exit code is a value from 0 to 255 which indicates how a process exited. All commands produce an exit code on completion.
+
+After a script interprets and processes all its content, the script process exits with the 0 exit code and passes control back to the parent process that called it. However, a script can exit before it finishes processing all commands, such as when the script encounters an error condition. Use the exit command, along with an optional exit code, to immediately leave the script and skip processing the remainder of the script, and returning the exit code to the shell.
+
+An exit code value of `0` represents a successful script completion with no errors. All other nonzero values indicate an error exit code. The `errno -l` command provides a list of standardized error codes and their meanings. You can retrieve the exit code of the most recent command from the built-in `$?` variable.
+
+The following script returns exit code 0 on successful execution:
+
+```bash
+cat hello
+```
+
+After executing the script, print the ? variable value to determine the exit code:
+
+```bash
+echo $?
+```
+
+The `/bin/true` command always returns the 0 exit code.
+
+```bash
+/bin/true
+echo $?
+```
+
+When a script's exit command is used without an exit code argument, the script returns the exit code of the last command that was run within the script.
+
+## Test for Conditions
+
+ou can test whether conditional statements are true by using the test command or the [[ CONDITION ]] syntax. Create conditional statements by comparing values with operators such as greater than (`-gt`), less than (`-lt`), equal (`-eq`), or not equal (`-ne`). Additionally, you can verify other statuses, such as whether a regular file (`-f`) or directory (`-d`) exists or whether the current user has read permission (`-r`).
+
+note
+    Shell scripting uses many other operators. The test(1) man page lists all conditional expression operators with descriptions. The bash(1) man page also explains operator use and evaluation, although it can be complex to read. Red Hat recommends learning shell scripting through quality books and courses that are dedicated to shell programming.
+
+The following examples demonstrate the test command with Bash numeric comparison operators.
+
+The following example runs successfully and prints the exit code as 0.
+
+```bash
+test 1 -gt 0; echo $?
+```
+
+The following example runs unsuccessfully and prints the exit code as 1.
+
+```bash
+test 0 -gt 1 ; echo $?
+```
+
+The following examples demonstrate the Bash test command syntax and numeric comparison operators:
+
+```bash
+[[ 1 -eq 1 ]]; echo $? #1
+# 0
+[[ 1 -ne 1 ]]; echo $? #2
+# 1
+[[ 8 -gt 2 ]]; echo $? #3
+# 0
+[[ 2 -ge 2 ]]; echo $? #4
+# 0
+[[ 2 -lt 2 ]]; echo $? #5
+# 1
+```
+
+1) Determines whether the operands are equal.
+2) Determines whether the operands are not equal.
+3) Determines that the left operand is greater than the right operand.
+4) Determines that the left operand is greater than or equal to the right operand.
+5) Determines that the left operand is less than the right operand.
+
+The following examples demonstrate the Bash string comparison operators:
+
+```bash
+[[ abc = abc ]]; echo $?  #1
+#0
+[[ abc == def ]]; echo $? #2
+#1
+[[ abc != def ]]; echo $? #3
+#0
+```
+
+1) Determines whether the operands are equal.
+2) Determines whether the operands are equal to match case sensitivity.
+3) Determines whether the operands are not equal.
+
+The following examples demonstrate Bash string unary (one argument) operators:
+
+```bash
+STRING=''; [[ -z "$STRING" ]]; echo $?
+#0
+STRING='abc'; [[ -n "$STRING" ]]; echo $?
+#0
+```
+
+| Operator    | Meaning                               |
+| ----------- | ------------------------------------- |
+| `=` or `==` | String equality                       |
+| `!=`        | String inequality                     |
+| `<`         | Less than in lexicographical order    |
+| `>`         | Greater than in lexicographical order |
+| `-z str`    | True if the string is empty           |
+| `-n str`    | True if the string is **not** empty   |
+
+Note
+
+    The space characters inside the brackets are mandatory, because they separate the words and elements within the test expression. The shell's command parsing routine divides the command elements into words and operators by recognizing spaces and other metacharacters, according to built-in parsing rules. For full treatment of this advanced concept, see the getopt(3) man page. The left square bracket character ([) is itself a built-in alias for the test command. Shell words, whether they are commands, subcommands, options, arguments, or other token elements, are always delimited by spaces.
+
+## While Loops and Until Loops
+
+While loops and until loops present a way to continue performing a set of commands provided that a condition is met. A while loop executes the body of the loop as long as the condition remains true (a zero exit code). However, an until loop executes as long as the condition remains false (a non-zero exit code). Both while loops and until loops test that the condition is true before performing any iterations in the loop. If the condition prevents an iteration of the loop before the while or until statement, then the loop body does not execute.
+
+The while(test)/do/done construct has the following syntax:
+
+```bash
+while <CONDITION>; do
+    <STATEMENT>
+    ...
+    <STATEMENT>
+done
+```
+
+With this construct, provided that the script meets the given condition, it executes the code in the statement block. Common test conditions in the while(test)/do/done statements include the previously discussed numeric, string, and file tests. The done statement at the end closes the while(test)/do/done construct.
+
+```bash
+x=1; while [[ $x -le 5 ]]; do
+    echo "x is $x"
+    x=$((x + 1))
+done; echo "Finished"
+```
+```bash
+x is 1
+x is 2
+x is 3
+x is 4
+x is 5
+Finished
+```
+
+The until(test)/do/done construct has the following syntax:
+
+```bash
+until <CONDITION>; do
+    <STATEMENT>
+    ...
+    <STATEMENT>
+done
+```
+
+With this construct, as long as the script does not meet the given condition, then it executes the code in the statement block. Common test conditions in the until(test)/do/done statements include the previously discussed numeric, string, and file tests. The done statement at the end closes the `until(test)/do/done` construct.
+
+The following code section demonstrates an `until(test)/do/done` construct to print the value of the variable x (which is initialized to 5) and to decrement x until x is less than 1:
+
+```bash
+x=5; until [[ $x -lt 1 ]]; do
+    echo "x is $x"
+    x=$((x - 1))
+done; echo "Finished"
+```
+
+```bash
+x is 5
+x is 4
+x is 3
+x is 2
+x is 1
+Finished
+```
+
+The exit code of the while and until commands is the exit code of the last executed statement. The exit code is zero if no statement was executed.
+
+## If Then Conditionals
+
+The simplest conditional structure is the `if/then` construct, with the following syntax:
+
+```bash
+if <CONDITION>; then
+    <STATEMENT>
+    ...
+    <STATEMENT>
+fi
+```
+
+With this construct, if the script meets the given condition, then it executes the code in the statement block. The script does not act if the given condition is not met. Common test conditions in the `if/then` statements include the previously discussed numeric, string, and file tests. The fi statement at the end closes the `if/then` construct.
+
+The following code section demonstrates an `if/then` construct to start the psacct service if it is not active:
+
+```bash
+systemctl is-active psacct > /dev/null 2>&1
+if [[ $? -ne 0 ]]; then sudo systemctl start psacct; fi
+```
+
+## Else Statements
+
+You can further expand the `if/then` construct to take different sets of actions depending on whether a condition is met. Use the `if/then/else` construct to accomplish this behavior, as in this example:
+
+```bash
+if <CONDITION>; then
+    <STATEMENT>
+    ...
+    <STATEMENT>
+else
+    <STATEMENT>
+    ...
+    <STATEMENT>
+fi
+```
+
+The following code section demonstrates an `if/then/else` statement to start the psacct service if it is not active, and to stop this service if it is active:
+
+```bash
+systemctl is-active psacct > /dev/null 2>&1
+if [[ $? -ne 0 ]]; then
+    sudo systemctl start psacct
+else
+    sudo systemctl stop psacct
+fi
+```
+
+## Elif Statements
+
+You can also expand an `if/then/else` construct to test more than one condition and to execute a different set of actions when the construct meets a specific condition.
+
+The next example shows the construct for an added condition:
+
+```bash
+if <CONDITION>; then
+    <STATEMENT>
+    ...
+    <STATEMENT>
+elif <CONDITION>; then
+    <STATEMENT>
+    ...
+    <STATEMENT>
+else
+    <STATEMENT>
+    ...
+    <STATEMENT>
+fi
+```
+
+In this conditional structure, Bash tests the conditions as they are ordered in the script. When a condition is true, Bash executes the actions that are associated with the condition and then skips the remainder of the conditional structure. If none of the conditions are true, then Bash executes the actions in the `else` clause.
+
+The following example demonstrates an `if/then/elif/then/else` statement to run the mysql client if the mariadb service is active, or to run the psql client if the postgresql service is active, or to run the sqlite3 client if both the mariadb and the postgresql service are inactive:
+
+```bash
+systemctl is-active mariadb > /dev/null 2>&1
+MARIADB_ACTIVE=$?
+sudo systemctl is-active postgresql > /dev/null 2>$&1
+POSTGRESQL_ACTIVE=$?
+if [[ "$MARIADB_ACTIVE" -eq 0 ]]; then
+    mysql
+elif [[ "$POSTGRESQL_ACTIVE" -eq 0 ]]; then
+    psql
+else
+    sqlite3
+fi
+```
